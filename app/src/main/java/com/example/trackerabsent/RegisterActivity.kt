@@ -1,7 +1,11 @@
 package com.example.trackerabsent
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -47,9 +51,32 @@ class RegisterActivity : AppCompatActivity() {
         tvLogin.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            // slide MainActivity from left, RegisterActivity slides right
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
         }
+
+        // Define colors
+        val normalColor = Color.parseColor("#6200EE") // blue/purple
+        val errorColor = Color.RED
+
+        // Helper function for realtime field reset
+        fun setupRealtimeValidation(editText: TextInputEditText, layout: TextInputLayout) {
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if (!s.isNullOrEmpty()) {
+                        layout.helperText = null
+                        layout.boxStrokeColor = normalColor
+                        layout.defaultHintTextColor = ColorStateList.valueOf(normalColor)
+                    }
+                }
+                override fun afterTextChanged(s: Editable?) {}
+            })
+        }
+
+        // Apply realtime validation to all fields
+        setupRealtimeValidation(etSchoolID, layoutSchooldID)
+        setupRealtimeValidation(etPassword, layoutPasswordd)
+        setupRealtimeValidation(etConfirmPassword, layoutConfirmPassword)
+        setupRealtimeValidation(etCourse, layoutCourse)
 
         btnRegister.setOnClickListener {
             val schoolID = etSchoolID.text.toString().trim()
@@ -59,32 +86,37 @@ class RegisterActivity : AppCompatActivity() {
 
             var isValid = true
 
-            // reset errors
-            layoutSchooldID.error = null
-            layoutPasswordd.error = null
-            layoutConfirmPassword.error = null
-            layoutCourse.error = null
+            // Reset all colors before validation
+            fun setError(layout: TextInputLayout, message: String) {
+                layout.helperText = message
+                layout.setHelperTextColor(ColorStateList.valueOf(errorColor))
+                layout.boxStrokeColor = errorColor
+                layout.defaultHintTextColor = ColorStateList.valueOf(errorColor)
+            }
 
             if (schoolID.isEmpty()) {
-                layoutSchooldID.error = "Please enter School ID"
+                setError(layoutSchooldID, "Please enter your School ID")
                 isValid = false
             }
+
             if (password.isEmpty()) {
-                layoutPasswordd.error = "Please enter Password"
+                setError(layoutPasswordd, "Please enter your Password")
                 isValid = false
             }
+
             if (confirmPassword.isEmpty()) {
-                layoutConfirmPassword.error = "Please confirm Password"
+                setError(layoutConfirmPassword, "Please Confirm your Password")
                 isValid = false
             }
+
             if (course.isEmpty()) {
-                layoutCourse.error = "Please enter Course"
+                setError(layoutCourse, "Please enter your Course")
                 isValid = false
             }
 
             if (isValid && password != confirmPassword) {
-                layoutPasswordd.error = "Passwords do not match"
-                layoutConfirmPassword.error = "Passwords do not match"
+                setError(layoutPasswordd, "Your Passwords do not match")
+                setError(layoutConfirmPassword, "Your Passwords do not match")
                 isValid = false
             }
 
@@ -93,8 +125,9 @@ class RegisterActivity : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                finish()
             } else {
-                Toast.makeText(this, "Please complete the required fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please complete the following", Toast.LENGTH_SHORT).show()
             }
         }
 

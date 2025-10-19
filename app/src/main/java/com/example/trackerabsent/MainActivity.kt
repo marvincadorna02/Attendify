@@ -1,7 +1,11 @@
 package com.example.trackerabsent
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -12,6 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 class MainActivity : AppCompatActivity() {
 
     private lateinit var tvRegister: TextView
+    private lateinit var tvTeacherOnly: TextView // ✅ Added this
     private lateinit var etSchoolID: TextInputEditText
     private lateinit var etPassword: TextInputEditText
     private lateinit var layoutSchoolID: TextInputLayout
@@ -22,27 +27,55 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // connect sa TextView
         tvRegister = findViewById(R.id.tvRegister)
-
-        // connect sa TextInputLayouts ug EditTexts
+        tvTeacherOnly = findViewById(R.id.tvForgotPassword) // ✅ Find the TextView
         layoutSchoolID = findViewById(R.id.layoutSchoolID)
         layoutPassword = findViewById(R.id.layoutPassword)
         etSchoolID = findViewById(R.id.schooldID)
         etPassword = findViewById(R.id.password)
         btnLogin = findViewById(R.id.btnLogin)
 
-        // click listener para mo-navigate sa RegisterActivity with slide animation
+        // ✅ When user clicks "Exclusive for Teachers Only"
+        tvTeacherOnly.setOnClickListener {
+            val intent = Intent(this, TeacherActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Open register page
         tvRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
-            // slide RegisterActivity from right, MainActivity slides left
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
         }
 
+        // Default color
+        val normalColor = Color.parseColor("#6200EE")
+        val errorColor = Color.RED
 
+        // Realtime remove error
+        etSchoolID.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    layoutSchoolID.helperText = null
+                    layoutSchoolID.boxStrokeColor = normalColor
+                    layoutSchoolID.defaultHintTextColor = ColorStateList.valueOf(normalColor)
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
-        // click listener sa Login button
+        etPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    layoutPassword.helperText = null
+                    layoutPassword.boxStrokeColor = normalColor
+                    layoutPassword.defaultHintTextColor = ColorStateList.valueOf(normalColor)
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         btnLogin.setOnClickListener {
             val schoolID = etSchoolID.text.toString().trim()
             val password = etPassword.text.toString().trim()
@@ -50,28 +83,27 @@ class MainActivity : AppCompatActivity() {
             var isValid = true
 
             if (schoolID.isEmpty()) {
-                layoutSchoolID.error = "Please enter School ID"
+                layoutSchoolID.helperText = "Required field"
+                layoutSchoolID.setHelperTextColor(ColorStateList.valueOf(errorColor))
+                layoutSchoolID.boxStrokeColor = errorColor
+                layoutSchoolID.defaultHintTextColor = ColorStateList.valueOf(errorColor)
                 isValid = false
-            } else {
-                layoutSchoolID.error = null
             }
 
             if (password.isEmpty()) {
-                layoutPassword.error = "Please enter Password"
+                layoutPassword.helperText = "Required field"
+                layoutPassword.setHelperTextColor(ColorStateList.valueOf(errorColor))
+                layoutPassword.boxStrokeColor = errorColor
+                layoutPassword.defaultHintTextColor = ColorStateList.valueOf(errorColor)
                 isValid = false
-            } else {
-                layoutPassword.error = null
             }
 
             if (isValid) {
                 Toast.makeText(this, "Successfully Login!", Toast.LENGTH_SHORT).show()
-
-                // Navigate to DashboardActivity
                 val intent = Intent(this, DashboardActivity::class.java)
                 startActivity(intent)
-                finish()  // optional para dili ka mo-back sa login
+                finish()
             }
         }
-
     }
 }

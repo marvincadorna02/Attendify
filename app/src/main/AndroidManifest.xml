@@ -34,6 +34,11 @@
             android:exported="true"
             android:label="Dashboard" />
 
+        <activity android:name=".TeacherActivity" />
+        <activity android:name=".TeacherDashboardActivity" />
+        <activity android:name=".SubjectStudentsActivity" />
+
+
     </application>
 
 </manifest>

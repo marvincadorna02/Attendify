@@ -16,7 +16,7 @@
         android:layout_height="59dp"
         android:background="#E0E0E0"
         app:title="Attendance Tracker"
-        app:titleTextColor="#8c52ff"
+        app:titleTextColor="@color/purple_500"
         app:titleTextAppearance="@style/Toolbar.Title.Bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,80 +38,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
-            android:gravity="center_horizontal">
-
-            <!-- Attendance Checker UI START -->
-            <LinearLayout
-                android:id="@+id/attendanceCheckerContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:layout_marginBottom="24dp"
-                android:background="#f9f9f9"
-                android:elevation="2dp">
-
-                <EditText
-                    android:id="@+id/etStudentId"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Student ID"
-                    android:padding="12dp"
-                    android:background="@drawable/edittext_outline"
-                    android:inputType="number"
-                    android:textColorHint="@color/black"
-                    android:textColor="@color/black"
-                    android:layout_marginBottom="12dp" />
-
-                <EditText
-                    android:id="@+id/etSubjectId"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:background="@drawable/edittext_outline"
-                    android:hint="Subject ID"
-                    android:textColorHint="@color/black"
-                    android:textColor="@color/black"
-                    android:inputType="text"
-                    android:layout_marginBottom="12dp" />
-
-                <EditText
-                    android:id="@+id/etDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Date (yyyy-MM-dd)"
-                    android:padding="12dp"
-                    android:background="@drawable/edittext_outline"
-                    android:inputType="date"
-                    android:textColorHint="@color/black"
-                    android:textColor="@color/black"
-                    android:layout_marginBottom="12dp" />
-
-                <Button
-                    android:id="@+id/btnCheck"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#8c52ff"
-                    android:padding="15dp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="24dp"
-                    android:text="Check Attendance"
-                    android:textColor="@color/white"
-                    android:layout_gravity="center_horizontal" />
-
-                <TextView
-                    android:id="@+id/tvResult"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textSize="16sp"
-                    android:textColor="#000000"
-                    android:paddingTop="12dp" />
-
-            </LinearLayout>
-            <!-- Attendance Checker UI END -->
-
-        </LinearLayout>
+            android:gravity="center_horizontal" />
     </ScrollView>
 
     <!-- Bottom App Bar -->
@@ -220,7 +147,7 @@
 
     <!-- Floating Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
+        android:id="@+id/addsubject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"

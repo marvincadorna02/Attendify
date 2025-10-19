@@ -64,7 +64,8 @@
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxStrokeColor="@color/purple_700"
                     app:boxStrokeWidth="2dp"
-                    app:endIconMode="clear_text">
+                    app:endIconMode="clear_text"
+                    app:endIconTint="#9E9E9E">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/schooldID"
@@ -95,7 +96,8 @@
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxStrokeColor="@color/purple_700"
                     app:boxStrokeWidth="2dp"
-                    app:endIconMode="password_toggle">
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="#9E9E9E">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password"
@@ -107,17 +109,19 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                android:id="@+id/tvForgotPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Forgot Password?"
-                android:textStyle="bold"
-                android:textColor="#8c52ff"
-                android:textSize="14sp"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="end"/>
+                    android:id="@+id/tvForgotPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Exclusive for Teachers Only"
+                    android:textStyle="bold"
+                    android:textColor="#8c52ff"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_gravity="end"
+                    android:clickable="true"
+                    android:focusable="true" />
 
-            <!-- Login button Part -->
+                <!-- Login button Part -->
             <Button
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
