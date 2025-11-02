@@ -1,6 +1,7 @@
 package com.example.trackerabsent
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -46,6 +47,14 @@ class DashboardActivity : AppCompatActivity() {
         fab.setOnClickListener {
             showAddWorkDialog()
         }
+
+        // ✅ Profile icon navigation
+        val profileIcon = findViewById<ImageView>(R.id.profile)
+        profileIcon.setOnClickListener {
+            val intent = Intent(this, StudentProfileActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+        }
     }
 
     private fun showDatePickerDialog() {
@@ -55,7 +64,6 @@ class DashboardActivity : AppCompatActivity() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         val datePicker = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            // Format date as yyyy-MM-dd
             val formattedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
             etDate.setText(formattedDate)
         }, year, month, day)
@@ -65,7 +73,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun checkAttendance() {
         val studentId = etStudentId.text.toString().trim()
-        val subjectName = etSubjectId.text.toString().trim()  // this is actually subject NAME input
+        val subjectName = etSubjectId.text.toString().trim()
         val date = etDate.text.toString().trim()
 
         Log.d("DashboardActivity", "Input -> studentId='$studentId', subjectName='$subjectName', date='$date'")
@@ -83,7 +91,6 @@ class DashboardActivity : AppCompatActivity() {
             return
         }
 
-        // 1. Get the subject by name from the DB (you need to add this method in DatabaseHelper)
         val subject = dbHelper.getSubjectByName(subjectName)
         if (subject == null) {
             Toast.makeText(this, "Subject not found", Toast.LENGTH_SHORT).show()
@@ -91,9 +98,7 @@ class DashboardActivity : AppCompatActivity() {
             return
         }
 
-        val subjectId = subject.id  // UUID string from DB
-
-        // 2. Now check enrollment using the subjectId (UUID) instead of subjectName
+        val subjectId = subject.id
         val isEnrolled = dbHelper.isStudentEnrolledInSubject(subjectId, studentId)
         Log.d("DashboardActivity", "Enrollment check result: $isEnrolled")
 
@@ -103,7 +108,6 @@ class DashboardActivity : AppCompatActivity() {
             return
         }
 
-        // 3. Use subjectId to count attendance
         val presentCount = dbHelper.countAttendanceByStatus(studentId, subjectId, date, "present")
         val absentCount = dbHelper.countAttendanceByStatus(studentId, subjectId, date, "absent")
 
@@ -115,7 +119,6 @@ class DashboardActivity : AppCompatActivity() {
             "Present: $presentCount\nAbsent: $absentCount"
         }
     }
-
 
     private fun showAddWorkDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_work, null)

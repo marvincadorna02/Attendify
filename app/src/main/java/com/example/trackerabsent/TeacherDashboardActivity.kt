@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import java.util.UUID
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.UUID
 
 class TeacherDashboardActivity : AppCompatActivity() {
 
@@ -33,6 +33,7 @@ class TeacherDashboardActivity : AppCompatActivity() {
         loadSubjects()
     }
 
+    // Add a new subject
     private fun showAddSubjectDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_subject, null)
         val etSubjectName = dialogView.findViewById<EditText>(R.id.etSubjectName)
@@ -49,7 +50,7 @@ class TeacherDashboardActivity : AppCompatActivity() {
             if (subjectName.isEmpty()) {
                 Toast.makeText(this, "Please enter subject name", Toast.LENGTH_SHORT).show()
             } else {
-                val subjectId = UUID.randomUUID().toString() // generate unique id for subject
+                val subjectId = UUID.randomUUID().toString() // unique id
                 dbHelper.insertSubject(subjectId, subjectName, "Teacher")
                 Toast.makeText(this, "Subject added successfully!", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
@@ -57,14 +58,14 @@ class TeacherDashboardActivity : AppCompatActivity() {
             }
         }
 
-
         dialog.show()
     }
 
-    // Now subjectId is a String, not Int
+    // Add student to a subject
     private fun showAddStudentDialog(subjectId: String) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_student, null)
         val etStudentId = dialogView.findViewById<EditText>(R.id.etStudentId)
+        val etStudentName = dialogView.findViewById<EditText>(R.id.etStudentName)
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
         val btnAdd = dialogView.findViewById<Button>(R.id.btnAdd)
 
@@ -77,12 +78,19 @@ class TeacherDashboardActivity : AppCompatActivity() {
 
         btnAdd.setOnClickListener {
             val studentId = etStudentId.text.toString().trim()
+            val studentName = etStudentName.text.toString().trim()
 
             if (studentId.isEmpty()) {
                 etStudentId.error = "Please enter student ID"
+            } else if (studentName.isEmpty()) {
+                etStudentName.error = "Please enter student Name"
             } else {
-                dbHelper.insertStudentToSubject(subjectId, studentId)
-                Toast.makeText(this, "Student added successfully!", Toast.LENGTH_SHORT).show()
+                val success = dbHelper.addStudentToSubject(studentId, studentName, subjectId)
+                if (success) {
+                    Toast.makeText(this, "Student added successfully!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Student already enrolled!", Toast.LENGTH_SHORT).show()
+                }
                 dialog.dismiss()
             }
         }
@@ -90,9 +98,10 @@ class TeacherDashboardActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    // Load all subjects
     private fun loadSubjects() {
         itemContainer.removeAllViews()
-        val subjects = dbHelper.getAllSubjects() // Ensure returns List<Subject> with id as String
+        val subjects = dbHelper.getAllSubjects()
 
         if (subjects.isEmpty()) {
             val emptyText = TextView(this).apply {
@@ -115,24 +124,26 @@ class TeacherDashboardActivity : AppCompatActivity() {
                 val btnAddStudent = subjectView.findViewById<Button>(R.id.btnAddStudent)
                 val btnRemove = subjectView.findViewById<Button>(R.id.btnRemove)
 
-                tvSubjectName.text = subject.subjectName
+                tvSubjectName.text = subject.name // fixed field name
 
-                // Use subject.id as String here
+                // Open SubjectStudentsActivity on click
                 subjectView.setOnClickListener {
                     val intent = Intent(this, SubjectStudentsActivity::class.java)
-                    intent.putExtra("subject_id", subject.id)  // String
-                    intent.putExtra("subject_name", subject.subjectName)
+                    intent.putExtra("subject_id", subject.id)
+                    intent.putExtra("subject_name", subject.name)
                     startActivity(intent)
                 }
 
+                // Add student to this subject
                 btnAddStudent.setOnClickListener {
                     showAddStudentDialog(subject.id)
                 }
 
+                // Remove subject
                 btnRemove.setOnClickListener {
                     val confirmDialog = AlertDialog.Builder(this)
                         .setTitle("Remove Subject")
-                        .setMessage("Are you sure you want to delete '${subject.subjectName}'?")
+                        .setMessage("Are you sure you want to delete '${subject.name}'?")
                         .setPositiveButton("Yes") { _, _ ->
                             val db = dbHelper.writableDatabase
                             db.delete("subjects", "id = ?", arrayOf(subject.id))
@@ -142,7 +153,6 @@ class TeacherDashboardActivity : AppCompatActivity() {
                         }
                         .setNegativeButton("No", null)
                         .create()
-
                     confirmDialog.show()
                 }
 

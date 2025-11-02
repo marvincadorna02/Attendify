@@ -4,10 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "AbsentTracker.db", null, 5) {
+    SQLiteOpenHelper(context, "AbsentTracker.db", null, 6) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
@@ -26,6 +25,7 @@ class DatabaseHelper(context: Context) :
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 subject_id TEXT NOT NULL,
                 student_school_id TEXT NOT NULL,
+                student_name TEXT NOT NULL,
                 FOREIGN KEY(subject_id) REFERENCES subjects(id) ON DELETE CASCADE
             )
             """.trimIndent()
@@ -52,31 +52,63 @@ class DatabaseHelper(context: Context) :
         onCreate(db)
     }
 
+    // Insert a new subject
     fun insertSubject(id: String, subjectName: String, teacherName: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
             put("id", id.trim().uppercase())
-            put("subject_name", subjectName)
-            put("teacher_name", teacherName)
+            put("subject_name", subjectName.trim())
+            put("teacher_name", teacherName.trim())
         }
         return db.insert("subjects", null, values)
     }
 
-    fun insertStudentToSubject(subjectId: String, studentId: String): Long {
+    // Add student to subject
+    fun addStudentToSubject(studentId: String, studentName: String, subjectId: String): Boolean {
+        if (isStudentEnrolledInSubject(subjectId, studentId)) return false
+
         val db = writableDatabase
         val values = ContentValues().apply {
             put("subject_id", subjectId.trim().uppercase())
             put("student_school_id", studentId.trim())
+            put("student_name", studentName.trim())
         }
         val result = db.insert("student_subjects", null, values)
-        if (result == -1L) {
-            Log.e("DatabaseHelper", "Failed to insert student_subject: subjectId=$subjectId, studentId=$studentId. Possibly missing subject in subjects table.")
-        } else {
-            Log.d("DatabaseHelper", "Inserted student_subject: subjectId=$subjectId, studentId=$studentId, rowId=$result")
-        }
-        return result
+        return result != -1L
     }
 
+    // Check if student is already enrolled
+    fun isStudentEnrolledInSubject(subjectId: String, studentId: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT 1 FROM student_subjects WHERE subject_id = ? AND student_school_id = ? LIMIT 1",
+            arrayOf(subjectId.trim().uppercase(), studentId.trim())
+        )
+        val exists = cursor.moveToFirst()
+        cursor.close()
+        return exists
+    }
+
+    // Get students for a subject as Pair(ID, Name)
+    fun getStudentsBySubject(subjectId: String): List<Pair<String, String>> {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT student_school_id, student_name FROM student_subjects WHERE subject_id = ?",
+            arrayOf(subjectId.trim().uppercase())
+        )
+        val students = mutableListOf<Pair<String, String>>()
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getString(0)
+                val name = cursor.getString(1)
+                students.add(Pair(id, name))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return students
+    }
+
+    // Attendance functions
     fun insertAttendance(subjectId: String, studentId: String, date: String, status: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -91,195 +123,85 @@ class DatabaseHelper(context: Context) :
     fun getAttendance(subjectId: String, studentId: String, date: String): String? {
         val db = readableDatabase
         val cursor = db.rawQuery(
-            """
-            SELECT status FROM attendance
-            WHERE subject_id = ? AND student_school_id = ? AND date = ?
-            """.trimIndent(),
+            "SELECT status FROM attendance WHERE subject_id=? AND student_school_id=? AND date=?",
             arrayOf(subjectId.trim().uppercase(), studentId.trim(), date.trim())
         )
-        var status: String? = null
-        if (cursor.moveToFirst()) {
-            status = cursor.getString(0)
-        }
+        val status = if (cursor.moveToFirst()) cursor.getString(0) else null
         cursor.close()
         return status
     }
 
-    fun countAttendanceByStatus(
-        studentId: String,
-        subjectId: String,
-        date: String,
-        status: String
-    ): Int {
+    fun countAttendanceByStatus(studentId: String, subjectId: String, date: String, status: String): Int {
         val db = readableDatabase
         val cursor = db.rawQuery(
-            """
-            SELECT COUNT(*) FROM attendance
-            WHERE student_school_id = ? AND subject_id = ? AND date = ? AND status = ?
-            """.trimIndent(),
+            "SELECT COUNT(*) FROM attendance WHERE student_school_id=? AND subject_id=? AND date=? AND status=?",
             arrayOf(studentId.trim(), subjectId.trim().uppercase(), date.trim(), status.trim().lowercase())
         )
         var count = 0
-        if (cursor.moveToFirst()) {
-            count = cursor.getInt(0)
-        }
+        if (cursor.moveToFirst()) count = cursor.getInt(0)
         cursor.close()
         return count
     }
 
-    fun getSubjectsByTeacher(teacherName: String): List<String> {
-        val db = readableDatabase
-        val cursor = db.rawQuery(
-            "SELECT subject_name FROM subjects WHERE teacher_name = ?",
-            arrayOf(teacherName.trim())
-        )
-        val subjects = mutableListOf<String>()
-        if (cursor.moveToFirst()) {
-            do {
-                subjects.add(cursor.getString(0))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return subjects
-    }
-
-    fun getSubjectsByStudent(studentId: String): List<String> {
-        val db = readableDatabase
-        val cursor = db.rawQuery(
-            """
-            SELECT s.subject_name FROM subjects s
-            JOIN student_subjects ss ON s.id = ss.subject_id
-            WHERE ss.student_school_id = ?
-            """.trimIndent(),
-            arrayOf(studentId.trim())
-        )
-        val subjects = mutableListOf<String>()
-        if (cursor.moveToFirst()) {
-            do {
-                subjects.add(cursor.getString(0))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return subjects
-    }
-
+    // Get all subjects
     fun getAllSubjects(): List<Subject> {
-        val subjectList = mutableListOf<Subject>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM subjects", null)
-
+        val cursor = db.rawQuery("SELECT id, subject_name, teacher_name FROM subjects", null)
+        val list = mutableListOf<Subject>()
         if (cursor.moveToFirst()) {
             do {
-                val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
-                val subjectName = cursor.getString(cursor.getColumnIndexOrThrow("subject_name"))
-                val teacherName = cursor.getString(cursor.getColumnIndexOrThrow("teacher_name"))
-                subjectList.add(Subject(id, subjectName, teacherName))
+                list.add(
+                    Subject(
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2)
+                    )
+                )
             } while (cursor.moveToNext())
         }
         cursor.close()
-        return subjectList
+        return list
     }
 
-    fun getAllSubjectsByTeacher(teacherName: String): List<Subject> {
-        val subjectList = mutableListOf<Subject>()
-        val db = readableDatabase
-        val cursor = db.rawQuery(
-            "SELECT * FROM subjects WHERE teacher_name = ?",
-            arrayOf(teacherName.trim())
-        )
-
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
-                val subjectName = cursor.getString(cursor.getColumnIndexOrThrow("subject_name"))
-                val teacherNameDb = cursor.getString(cursor.getColumnIndexOrThrow("teacher_name"))
-                subjectList.add(Subject(id, subjectName, teacherNameDb))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return subjectList
-    }
-
-    fun getStudentsBySubject(subjectId: String): List<String> {
-        val db = readableDatabase
-        val cursor = db.rawQuery(
-            "SELECT student_school_id FROM student_subjects WHERE subject_id = ?",
-            arrayOf(subjectId.trim().uppercase())
-        )
-
-        val students = mutableListOf<String>()
-        if (cursor.moveToFirst()) {
-            do {
-                students.add(cursor.getString(0))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return students
-    }
-
-    fun isStudentEnrolledInSubject(subjectId: String, studentId: String): Boolean {
-        val trimmedSubjectId = subjectId.trim().uppercase()
-        val trimmedStudentId = studentId.trim()
-        val db = readableDatabase
-        val cursor = db.rawQuery(
-            """
-            SELECT 1 FROM student_subjects 
-            WHERE subject_id = ? AND student_school_id = ?
-            LIMIT 1
-            """.trimIndent(),
-            arrayOf(trimmedSubjectId, trimmedStudentId)
-        )
-        val isEnrolled = cursor.moveToFirst()
-        cursor.close()
-
-        Log.d("DatabaseHelper", "Enrollment check for student='$trimmedStudentId', subject='$trimmedSubjectId': $isEnrolled")
-        return isEnrolled
-    }
-
+    // Get subject by name
     fun getSubjectByName(subjectName: String): Subject? {
         val db = readableDatabase
         val cursor = db.rawQuery(
-            "SELECT * FROM subjects WHERE UPPER(subject_name) = ?",
+            "SELECT id, subject_name, teacher_name FROM subjects WHERE UPPER(subject_name)=?",
             arrayOf(subjectName.trim().uppercase())
         )
         var subject: Subject? = null
         if (cursor.moveToFirst()) {
-            val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
-            val name = cursor.getString(cursor.getColumnIndexOrThrow("subject_name"))
-            val teacher = cursor.getString(cursor.getColumnIndexOrThrow("teacher_name"))
-            subject = Subject(id, name, teacher)
+            subject = Subject(
+                cursor.getString(0),
+                cursor.getString(1),
+                cursor.getString(2)
+            )
         }
         cursor.close()
         return subject
     }
 
-    fun logAllEnrollments() {
+    // Get subjects by teacher
+    fun getSubjectsByTeacher(teacherName: String): List<Subject> {
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT subject_id, student_school_id FROM student_subjects", null)
+        val cursor = db.rawQuery(
+            "SELECT id, subject_name, teacher_name FROM subjects WHERE teacher_name=?",
+            arrayOf(teacherName.trim())
+        )
+        val list = mutableListOf<Subject>()
         if (cursor.moveToFirst()) {
             do {
-                val subjectId = cursor.getString(0)
-                val studentId = cursor.getString(1)
-                Log.d("DatabaseHelper", "Enrollment Record - Subject: $subjectId, Student: $studentId")
+                list.add(
+                    Subject(
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2)
+                    )
+                )
             } while (cursor.moveToNext())
-        } else {
-            Log.d("DatabaseHelper", "No enrollment records found.")
         }
         cursor.close()
-    }
-
-    fun logAllSubjects() {
-        val db = readableDatabase
-        val cursor = db.rawQuery("SELECT id, subject_name FROM subjects", null)
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getString(0)
-                val name = cursor.getString(1)
-                Log.d("DatabaseHelper", "Subject Record - ID: $id, Name: $name")
-            } while (cursor.moveToNext())
-        } else {
-            Log.d("DatabaseHelper", "No subjects found.")
-        }
-        cursor.close()
+        return list
     }
 }

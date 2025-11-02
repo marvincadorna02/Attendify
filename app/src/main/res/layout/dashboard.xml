@@ -14,15 +14,15 @@
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="59dp"
-        android:background="#E0E0E0"
+        android:background="#8c52ff"
         app:title="Attendance Tracker"
-        app:titleTextColor="#8c52ff"
+        app:titleTextColor="@color/white"
         app:titleTextAppearance="@style/Toolbar.Title.Bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Content Scroll Area -->
+    <!-- Scroll Content -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
@@ -79,9 +79,10 @@
                     android:id="@+id/etDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Date (yyyy-MM-dd)"
+                    android:hint="Date (YYYY-MM-DD)"
                     android:padding="12dp"
                     android:background="@drawable/edittext_outline"
+                    android:drawableEnd="@drawable/calendar"
                     android:inputType="date"
                     android:textColorHint="@color/black"
                     android:textColor="@color/black"
@@ -98,18 +99,40 @@
                     android:text="Check Attendance"
                     android:textColor="@color/white"
                     android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+            <!-- Attendance Checker UI END -->
+
+            <TextView
+                android:id="@+id/resultTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="103dp"
+                android:text="Attendance Result"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginBottom="8dp" />
+
+            <!-- ✅ Separate Container for Result -->
+            <LinearLayout
+                android:id="@+id/resultContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="#f3f3f3"
+                android:elevation="1dp"
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/tvResult"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
                     android:textSize="16sp"
                     android:textColor="#000000"
-                    android:paddingTop="12dp" />
-
+                    android:textStyle="bold"
+                    android:gravity="center" />
             </LinearLayout>
-            <!-- Attendance Checker UI END -->
 
         </LinearLayout>
     </ScrollView>
@@ -125,14 +148,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Icons container -->
+        <!-- Evenly spaced icons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center"
-            android:weightSum="3"
-            android:layout_gravity="center_vertical">
+            android:weightSum="2">
 
             <!-- Home -->
             <LinearLayout
@@ -144,24 +166,14 @@
 
                 <ImageView
                     android:id="@+id/home"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="43dp"
+                    android:layout_height="40dp"
                     android:src="@drawable/home"
                     android:contentDescription="Home"
                     app:tint="#8c52ff" />
-
-                <TextView
-                    android:id="@+id/text_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Home"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginTop="2dp" />
             </LinearLayout>
 
-            <!-- More -->
+            <!-- Person -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -170,52 +182,14 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/more"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/more"
-                    android:contentDescription="More"
-                    app:tint="#8c52ff" />
-
-                <TextView
-                    android:id="@+id/text_user"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="More"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <!-- Settings -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/settings"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/settings"
+                    android:id="@+id/profile"
+                    android:layout_width="43dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/person"
                     android:contentDescription="Settings"
                     app:tint="#8c52ff" />
-
-                <TextView
-                    android:id="@+id/text_card"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Settings"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginTop="2dp" />
             </LinearLayout>
         </LinearLayout>
-
     </androidx.appcompat.widget.Toolbar>
 
     <!-- Floating Button -->
@@ -224,7 +198,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:contentDescription="Add"
         app:srcCompat="@drawable/ic_add"
         app:backgroundTint="#8c52ff"
         app:tint="@android:color/white"
@@ -232,5 +205,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="100dp" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
