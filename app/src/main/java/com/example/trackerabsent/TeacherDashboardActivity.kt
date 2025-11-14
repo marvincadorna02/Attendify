@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.UUID
@@ -26,11 +27,23 @@ class TeacherDashboardActivity : AppCompatActivity() {
         itemContainer = findViewById(R.id.itemContainer)
         btnAddSubject = findViewById(R.id.addsubject)
 
+        // Make settings icon clickable
+        val settingsIcon = findViewById<ImageView>(R.id.settings)
+        settingsIcon.setOnClickListener {
+            val intent = Intent(this, TeacherProfileActivity::class.java)
+            startActivity(intent)
+        }
+
         btnAddSubject.setOnClickListener {
             showAddSubjectDialog()
         }
 
         loadSubjects()
+
+        // 🔥 Back button exit confirmation
+        onBackPressedDispatcher.addCallback(this) {
+            showExitDialog()
+        }
     }
 
     // Add a new subject
@@ -124,7 +137,7 @@ class TeacherDashboardActivity : AppCompatActivity() {
                 val btnAddStudent = subjectView.findViewById<Button>(R.id.btnAddStudent)
                 val btnRemove = subjectView.findViewById<Button>(R.id.btnRemove)
 
-                tvSubjectName.text = subject.name // fixed field name
+                tvSubjectName.text = subject.name
 
                 // Open SubjectStudentsActivity on click
                 subjectView.setOnClickListener {
@@ -134,7 +147,7 @@ class TeacherDashboardActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
 
-                // Add student to this subject
+                // Add student
                 btnAddStudent.setOnClickListener {
                     showAddStudentDialog(subject.id)
                 }
@@ -159,5 +172,22 @@ class TeacherDashboardActivity : AppCompatActivity() {
                 itemContainer.addView(subjectView)
             }
         }
+    }
+
+    // 🔥 Exit App dialog
+    private fun showExitDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Exit App")
+        builder.setMessage("Are you sure you want to exit this application?")
+
+        builder.setPositiveButton("Yes") { _, _ ->
+            finishAffinity()
+        }
+
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
     }
 }

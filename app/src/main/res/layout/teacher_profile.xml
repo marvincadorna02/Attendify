@@ -39,6 +39,7 @@
             android:layout_height="110dp"
             android:src="@drawable/person"
             android:background="@drawable/circle_border"
+            android:scaleType="centerCrop"
             android:padding="10dp"
             android:layout_marginBottom="16dp" />
 
@@ -47,7 +48,9 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="Full Name"
+            app:startIconDrawable="@drawable/name"
             app:startIconTint="#8c52ff"
+            android:textColorHint="#8c52ff"
             app:boxStrokeColor="#8c52ff"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
@@ -59,8 +62,8 @@
                 android:id="@+id/etTeacherName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Prof. John Santos"
                 android:textColor="#333333"
+                android:textColorHint="#8c52ff"
                 android:textSize="16sp"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -71,6 +74,8 @@
             android:layout_height="wrap_content"
             android:hint="Department"
             app:startIconTint="#8c52ff"
+            app:startIconDrawable="@drawable/dean"
+            android:textColorHint="#8c52ff"
             app:boxStrokeColor="#8c52ff"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
@@ -81,8 +86,8 @@
                 android:id="@+id/etDepartment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Computer Science"
                 android:textColor="#333333"
+                android:textColorHint="#8c52ff"
                 android:textSize="16sp"
                 android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -95,7 +100,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="#FFFFFF"
+        android:background="@drawable/rounded_result_container"
         android:elevation="2dp"
         android:layout_margin="16dp"
         android:layout_marginTop="8dp"
@@ -117,7 +122,9 @@
             android:layout_height="wrap_content"
             android:hint="Email Address"
             app:startIconTint="#8c52ff"
+            app:startIconDrawable="@drawable/email"
             app:boxStrokeColor="#8c52ff"
+            android:textColorHint="#8c52ff"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
@@ -128,9 +135,9 @@
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="johnsantos@school.edu"
                 android:textSize="16sp"
                 android:textColor="#333333"
+                android:textColorHint="#8c52ff"
                 android:inputType="textEmailAddress"
                 android:padding="15dp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -141,6 +148,8 @@
             android:layout_height="wrap_content"
             android:hint="Contact Number"
             app:startIconTint="#8c52ff"
+            android:textColorHint="#8c52ff"
+            app:startIconDrawable="@drawable/phone"
             app:boxStrokeColor="#8c52ff"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
@@ -152,9 +161,9 @@
                 android:id="@+id/etContact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="+63 912 345 6789"
                 android:textSize="16sp"
                 android:textColor="#333333"
+                android:textColorHint="#8c52ff"
                 android:inputType="phone"
                 android:padding="15dp" />
         </com.google.android.material.textfield.TextInputLayout>

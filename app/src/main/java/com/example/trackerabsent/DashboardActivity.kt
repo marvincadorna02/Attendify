@@ -48,7 +48,7 @@ class DashboardActivity : AppCompatActivity() {
             showAddWorkDialog()
         }
 
-        // ✅ Profile icon navigation
+        // Profile icon navigation
         val profileIcon = findViewById<ImageView>(R.id.profile)
         profileIcon.setOnClickListener {
             val intent = Intent(this, StudentProfileActivity::class.java)
@@ -169,5 +169,22 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         itemContainer.addView(itemView)
+    }
+
+    // ⬇️⬇️ EXIT DIALOG ADDED HERE
+    override fun onBackPressed() {
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Exit App")
+        builder.setMessage("Are you sure you want to exit this application?")
+
+        builder.setPositiveButton("Yes") { _, _ ->
+            finishAffinity() // close the app completely
+        }
+
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
     }
 }

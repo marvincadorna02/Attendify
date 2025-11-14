@@ -97,7 +97,7 @@
                     app:boxStrokeColor="@color/purple_700"
                     app:boxStrokeWidth="2dp"
                     app:endIconMode="password_toggle"
-                    app:endIconTint="#9E9E9E">
+                    app:endIconTint="#8c52ff">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password"

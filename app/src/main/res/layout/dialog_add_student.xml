@@ -12,7 +12,7 @@
         android:text="Add Student to Subject"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#000000"
+        android:textColor="#8c52ff"
         android:layout_marginBottom="16dp" />
 
     <!-- Student ID -->
@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:hint="Enter Student ID"
         android:inputType="text"
-        android:textColor="@color/black"
-        android:textColorHint="@color/black"
+        android:textColor="#8c52ff"
+        android:textColorHint="#8c52ff"
         android:layout_marginBottom="16dp"
         android:padding="10dp"
         android:background="@drawable/edittext_outline"/>
@@ -35,8 +35,8 @@
         android:layout_height="wrap_content"
         android:hint="Enter Student Full Name"
         android:inputType="textPersonName"
-        android:textColor="@color/black"
-        android:textColorHint="@color/black"
+        android:textColor="#8c52ff"
+        android:textColorHint="#8c52ff"
         android:layout_marginBottom="20dp"
         android:padding="10dp"
         android:background="@drawable/edittext_outline"/>

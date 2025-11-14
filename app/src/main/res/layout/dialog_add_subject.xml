@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Subject Name"
-        android:textColorHint="@color/black"
+        android:textColorHint="#8c52ff"
         android:padding="12dp"
         android:background="@drawable/edittext_outline"
         android:inputType="text"

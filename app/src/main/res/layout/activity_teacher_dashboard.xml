@@ -45,7 +45,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/bottomAppBar"
         android:layout_width="0dp"
-        android:layout_height="65dp"
+        android:layout_height="55dp"
         android:background="#E0E0E0"
         app:title=""
         app:layout_constraintBottom_toBottomOf="parent"
