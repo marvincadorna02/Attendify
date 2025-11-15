@@ -32,16 +32,33 @@
         android:padding="24dp"
         app:layout_constraintTop_toBottomOf="@id/topAppBar">
 
-        <!-- Profile Picture -->
-        <ImageView
-            android:id="@+id/imgProfile"
+        <!-- Profile Picture with Plus Icon -->
+        <FrameLayout
             android:layout_width="110dp"
             android:layout_height="110dp"
-            android:src="@drawable/person"
-            android:background="@drawable/circle_border"
-            android:scaleType="centerCrop"
-            android:padding="10dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp">
+
+            <!-- Profile Image -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgProfile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/person"
+                android:background="@drawable/circle_border"
+                android:scaleType="centerCrop" />
+
+            <!-- Plus Icon Overlay -->
+            <ImageView
+                android:id="@+id/imgAddPhoto"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_add"
+                android:background="@drawable/circle"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="4dp"
+                android:padding="6dp"
+                android:elevation="4dp" />
+        </FrameLayout>
 
         <!-- Teacher Name -->
         <com.google.android.material.textfield.TextInputLayout

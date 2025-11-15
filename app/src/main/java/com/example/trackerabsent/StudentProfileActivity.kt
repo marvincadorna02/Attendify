@@ -6,6 +6,7 @@ import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.bumptech.glide.Glide
 
 class StudentProfileActivity : AppCompatActivity() {
 
@@ -20,10 +21,13 @@ class StudentProfileActivity : AppCompatActivity() {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            // Display selected image
-            imgProfile.setImageURI(it)
+            // Load image using Glide
+            Glide.with(this)
+                .load(it)
+                .centerCrop()
+                .into(imgProfile)
 
-            // Save URI to SharedPreferences so it persists
+            // Save URI to SharedPreferences
             val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
             prefs.edit()
                 .putString(KEY_IMAGE_URI, it.toString())
@@ -47,11 +51,14 @@ class StudentProfileActivity : AppCompatActivity() {
         // Find ImageView
         imgProfile = findViewById(R.id.imgProfile)
 
-        // Load saved image URI if it exists
+        // Load saved image URI if it exists using Glide
         val savedUri = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
             .getString(KEY_IMAGE_URI, null)
         savedUri?.let {
-            imgProfile.setImageURI(Uri.parse(it))
+            Glide.with(this)
+                .load(Uri.parse(it))
+                .centerCrop()
+                .into(imgProfile)
         }
 
         // Open gallery on click
