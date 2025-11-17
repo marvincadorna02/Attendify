@@ -7,8 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -16,23 +15,21 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputEditText
+import de.hdodenhof.circleimageview.CircleImageView
 
 class StudentProfileActivity : AppCompatActivity() {
 
-    private lateinit var imgProfile: ImageView
-    private lateinit var etStudentName: EditText
-    private lateinit var etStudentId: EditText
+    private lateinit var imgProfile: CircleImageView
+    private lateinit var etFullname: TextInputEditText
     private lateinit var etCourse: TextInputEditText
-    private lateinit var etYearLevel: TextInputEditText
     private lateinit var etEmail: TextInputEditText
-    private lateinit var etPhone: TextInputEditText
+    private lateinit var etContact: TextInputEditText
     private lateinit var btnSave: Button
 
     private val PREFS_NAME = "StudentProfilePrefs"
     private val KEY_IMAGE_URI = "profileImageUri"
     private val CHANNEL_ID = "profile_update_channel"
 
-    // Image picker launcher
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -41,10 +38,7 @@ class StudentProfileActivity : AppCompatActivity() {
                 .load(it)
                 .centerCrop()
                 .into(imgProfile)
-
-            // Save URI to SharedPreferences
-            val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-            prefs.edit()
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
                 .putString(KEY_IMAGE_URI, it.toString())
                 .apply()
         }
@@ -54,23 +48,21 @@ class StudentProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.student_profile)
 
-        // Setup toolbar
+        // Toolbar
         val toolbar = findViewById<Toolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Student Profile"
-        toolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            title = "Student Profile"
         }
+        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        // Find Views
+        // Views
         imgProfile = findViewById(R.id.imgProfile)
-        etStudentName = findViewById(R.id.etStudentName)
-        etStudentId = findViewById(R.id.etStudentId)
+        etFullname = findViewById(R.id.etFullname)
         etCourse = findViewById(R.id.etCourse)
-        etYearLevel = findViewById(R.id.etYearLevel)
         etEmail = findViewById(R.id.etEmail)
-        etPhone = findViewById(R.id.etContact)
+        etContact = findViewById(R.id.etContact)
         btnSave = findViewById(R.id.btnSave)
 
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
@@ -84,62 +76,56 @@ class StudentProfileActivity : AppCompatActivity() {
         }
 
         // Load saved input fields
-        etStudentName.setText(prefs.getString("studentName", ""))
-        etStudentId.setText(prefs.getString("studentId", ""))
+        etFullname.setText(prefs.getString("studentName", ""))
         etCourse.setText(prefs.getString("course", ""))
-        etYearLevel.setText(prefs.getString("yearLevel", ""))
         etEmail.setText(prefs.getString("email", ""))
-        etPhone.setText(prefs.getString("phone", ""))
+        etContact.setText(prefs.getString("phone", ""))
 
-        // Click to pick new profile image
-        imgProfile.setOnClickListener {
-            pickImage.launch("image/*")
-        }
+        // Image picker
+        imgProfile.setOnClickListener { pickImage.launch("image/*") }
 
-        // Create notification channel
+        // Notification channel
         createNotificationChannel()
 
-        // Save button click
+        // Save button
         btnSave.setOnClickListener {
-            // Save all input fields
             prefs.edit()
-                .putString("studentName", etStudentName.text.toString())
-                .putString("studentId", etStudentId.text.toString())
+                .putString("studentName", etFullname.text.toString())
                 .putString("course", etCourse.text.toString())
-                .putString("yearLevel", etYearLevel.text.toString())
                 .putString("email", etEmail.text.toString())
-                .putString("phone", etPhone.text.toString())
+                .putString("phone", etContact.text.toString())
                 .apply()
 
-            // Show notification
-            val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentTitle("Profile Updated")
-                .setContentText("Your profile has been saved successfully!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true)
+            Toast.makeText(this, "Profile saved successfully!", Toast.LENGTH_SHORT).show()
 
-            NotificationManagerCompat.from(this).notify(1001, builder.build())
+            // Notification
+            NotificationManagerCompat.from(this).notify(
+                1001,
+                NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(android.R.drawable.ic_dialog_info)
+                    .setContentTitle("Profile Updated")
+                    .setContentText("Your profile has been saved successfully!")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setAutoCancel(true)
+                    .build()
+            )
 
-            // Navigate to DashboardActivity
-            val intent = Intent(this, DashboardActivity::class.java)
-            startActivity(intent)
-            finish() // close this activity
+            // Navigate to Dashboard
+            startActivity(Intent(this, DashboardActivity::class.java))
+            finish()
         }
     }
 
-    // Notification channel setup
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Profile Updates"
-            val descriptionText = "Notifications when profile is updated"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance)
-            channel.description = descriptionText
-
-            val notificationManager: NotificationManager =
-                getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Profile Updates",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Notifications when profile is updated"
+            }
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
     }
 }

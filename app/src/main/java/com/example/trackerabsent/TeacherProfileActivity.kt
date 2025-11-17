@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -97,6 +98,8 @@ class TeacherProfileActivity : AppCompatActivity() {
                 .putString("email", etEmail.text.toString())
                 .putString("contact", etContact.text.toString())
                 .apply()
+
+            Toast.makeText(this, "Profile saved successfully!", Toast.LENGTH_SHORT).show()
 
             // Show notification
             val builder = NotificationCompat.Builder(this, CHANNEL_ID)
