@@ -17,7 +17,7 @@
         android:background="#8c52ff"
         app:title="Attendance Tracker"
         app:titleTextColor="@color/white"
-        app:titleTextAppearance="@style/Toolbar.Title.Bold"
+        app:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

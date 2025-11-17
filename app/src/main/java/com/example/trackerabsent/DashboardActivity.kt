@@ -53,7 +53,6 @@ class DashboardActivity : AppCompatActivity() {
         profileIcon.setOnClickListener {
             val intent = Intent(this, StudentProfileActivity::class.java)
             startActivity(intent)
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
         }
     }
 

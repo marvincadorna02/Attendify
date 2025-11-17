@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Custom style for Toolbar title (bold) -->
+    <!-- Custom style for Toolbar title (bold Montserrat) -->
     <style name="Toolbar.Title.Bold" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">#FFFFFF</item> <!-- White text (you can change) -->
+        <item name="android:textStyle">bold</item> <!-- font already bold -->
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+        <item name="android:textColor">#FFFFFF</item>
         <item name="android:textSize">20sp</item>
     </style>
 

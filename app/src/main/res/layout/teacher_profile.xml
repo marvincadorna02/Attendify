@@ -5,38 +5,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9F9F9"
+    android:background="#F5F5F7"
     tools:context=".TeacherProfileActivity">
 
     <!-- Top App Bar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:background="#8c52ff"
         app:navigationIcon="@drawable/arrowback"
         app:title="Teacher Profile"
         app:titleTextColor="@android:color/white"
-        app:titleTextAppearance="@style/TextAppearance.AppCompat.Large"
+        app:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Profile Section -->
+    <!-- Profile Picture Section -->
     <LinearLayout
         android:id="@+id/profileSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="24dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
         app:layout_constraintTop_toBottomOf="@id/topAppBar">
 
-        <!-- Profile Picture with Plus Icon -->
         <FrameLayout
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:layout_marginBottom="16dp">
+            android:layout_width="120dp"
+            android:layout_height="120dp">
 
             <!-- Profile Image -->
             <de.hdodenhof.circleimageview.CircleImageView
@@ -45,144 +45,156 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/person"
                 android:background="@drawable/circle_border"
+                android:elevation="6dp"
                 android:scaleType="centerCrop" />
 
-            <!-- Plus Icon Overlay -->
+            <!-- + Button -->
             <ImageView
                 android:id="@+id/imgAddPhoto"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
                 android:src="@drawable/ic_add"
                 android:background="@drawable/circle"
-                android:layout_gravity="bottom|end"
+                android:padding="7dp"
                 android:layout_margin="4dp"
-                android:padding="6dp"
-                android:elevation="4dp" />
+                android:layout_gravity="bottom|end"
+                android:elevation="8dp"
+                android:foreground="?attr/selectableItemBackgroundBorderless"/>
         </FrameLayout>
 
-        <!-- Teacher Name -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:hint="Full Name"
-            app:startIconDrawable="@drawable/name"
-            app:startIconTint="#8c52ff"
-            android:textColorHint="#8c52ff"
-            app:boxStrokeColor="#8c52ff"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            android:layout_marginBottom="10dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etTeacherName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#333333"
-                android:textColorHint="#8c52ff"
-                android:textSize="16sp"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Department -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:hint="Department"
-            app:startIconTint="#8c52ff"
-            app:startIconDrawable="@drawable/dean"
-            android:textColorHint="#8c52ff"
-            app:boxStrokeColor="#8c52ff"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDepartment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#333333"
-                android:textColorHint="#8c52ff"
-                android:textSize="16sp"
-                android:inputType="textCapWords" />
-        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
-    <!-- Info Section -->
+    <!-- Profile Information Card -->
     <LinearLayout
         android:id="@+id/infoSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
         android:background="@drawable/rounded_result_container"
-        android:elevation="2dp"
-        android:layout_margin="16dp"
-        android:layout_marginTop="8dp"
+        android:elevation="4dp"
+        android:padding="20dp"
+        android:layout_margin="18dp"
         app:layout_constraintTop_toBottomOf="@id/profileSection">
 
+        <!-- Title -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Profile Information"
             android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#8c52ff"
+            android:textSize="21sp"
+            android:letterSpacing="0.02"
+            android:textColor="#7A42FF"
             android:gravity="center"
             android:layout_marginBottom="16dp" />
+
+        <!-- Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/purple_700"
+            android:hint="Full Name"
+            app:startIconDrawable="@drawable/name"
+            app:startIconTint="#8c52ff"
+            app:hintTextColor="@color/purple_700"
+            app:boxStrokeColor="#8c52ff"
+            app:boxStrokeWidth="2dp"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            android:layout_marginBottom="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTeacherName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:padding="14dp"
+                android:textColor="@color/purple_700"
+                android:textColorHint="#8c52ff"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Department -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/purple_700"
+            android:hint="Department"
+            app:startIconDrawable="@drawable/dean"
+            app:startIconTint="#8c52ff"
+            app:hintTextColor="@color/purple_700"
+            app:boxStrokeColor="#8c52ff"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            android:layout_marginBottom="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDepartment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple_700"
+                android:textColorHint="#8c52ff"
+                android:textSize="16sp"
+                android:padding="14dp"
+                android:inputType="textCapWords"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Email -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColorHint="@color/purple_700"
             android:hint="Email Address"
-            app:startIconTint="#8c52ff"
             app:startIconDrawable="@drawable/email"
+            app:startIconTint="#8c52ff"
+            app:hintTextColor="@color/purple_700"
             app:boxStrokeColor="#8c52ff"
-            android:textColorHint="#8c52ff"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            android:layout_marginBottom="12dp">
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            android:layout_marginBottom="14dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="#333333"
-                android:textColorHint="#8c52ff"
                 android:inputType="textEmailAddress"
-                android:padding="15dp" />
+                android:padding="14dp"
+                android:textColor="@color/purple_700"
+                android:textColorHint="#8c52ff"
+                android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Contact -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColorHint="@color/purple_700"
             android:hint="Contact Number"
-            app:startIconTint="#8c52ff"
-            android:textColorHint="#8c52ff"
             app:startIconDrawable="@drawable/phone"
+            app:startIconTint="#8c52ff"
+            app:hintTextColor="@color/purple_700"
             app:boxStrokeColor="#8c52ff"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            android:layout_marginBottom="12dp">
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etContact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="#333333"
+                android:textColor="@color/purple_700"
                 android:textColorHint="#8c52ff"
-                android:inputType="phone"
-                android:padding="15dp" />
+                android:textSize="16sp"
+                android:padding="14dp"
+                android:inputType="phone"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Save Button -->
@@ -191,10 +203,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Changes"
-            android:backgroundTint="#8c52ff"
+            android:textAllCaps="false"
+            android:textSize="16sp"
             android:textColor="@android:color/white"
-            android:layout_marginTop="8dp"
-            android:padding="15dp"/>
+            android:backgroundTint="#8c52ff"
+            android:padding="15dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:gravity="center">
+
+        </Button>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

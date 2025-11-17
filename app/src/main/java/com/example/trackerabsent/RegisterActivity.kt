@@ -124,7 +124,6 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                 finish()
             } else {
                 Toast.makeText(this, "Please complete the following", Toast.LENGTH_SHORT).show()
@@ -135,7 +134,6 @@ class RegisterActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finish()
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
             }
         })
     }
