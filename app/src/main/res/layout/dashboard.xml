@@ -79,14 +79,16 @@
                     android:id="@+id/etDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Date (YYYY-MM-DD)"
+                    android:hint="Select Date"
                     android:padding="14dp"
+                    android:focusable="false"
+                    android:clickable="true"
                     android:background="@drawable/edittext_outline"
                     android:drawableEnd="@drawable/calendar"
-                    android:inputType="date"
                     android:textColorHint="@color/black"
                     android:textColor="@color/black"
                     android:layout_marginBottom="14dp" />
+
 
                 <Button
                     android:id="@+id/btnCheck"
@@ -168,6 +170,16 @@
                     android:src="@drawable/home"
                     android:contentDescription="Home"
                     app:tint="#8c52ff" />
+
+                <TextView
+                    android:id="@+id/homeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Home"
+                    app:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                    android:textSize="12sp"
+                    android:textColor="#8c52ff"
+                    android:layout_gravity="center" />
             </LinearLayout>
 
             <LinearLayout
@@ -184,23 +196,20 @@
                     android:src="@drawable/person"
                     android:contentDescription="Profile"
                     app:tint="#8c52ff" />
+
+                <TextView
+                    android:id="@+id/homeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    app:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                    android:textSize="12sp"
+                    android:textColor="#8c52ff"
+                    android:layout_gravity="center" />
             </LinearLayout>
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
     <!-- Floating Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:srcCompat="@drawable/ic_add"
-        app:backgroundTint="#8c52ff"
-        app:tint="@android:color/white"
-        android:elevation="6dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="100dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,4 +8,13 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="SpinnerDatePicker" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:datePickerStyle">@style/SpinnerDatePickerStyle</item>
+    </style>
+
+    <style name="SpinnerDatePickerStyle" parent="android:Widget.Material.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+    </style>
+
+
 </resources>

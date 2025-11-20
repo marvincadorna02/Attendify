@@ -12,7 +12,7 @@
         android:text="Add Student to Subject"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#8c52ff"
+        android:textColor="@color/black"
         android:layout_marginBottom="16dp" />
 
     <!-- Student ID -->
@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:hint="Enter Student ID"
         android:inputType="text"
-        android:textColor="#8c52ff"
-        android:textColorHint="#8c52ff"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:layout_marginBottom="16dp"
         android:padding="10dp"
         android:background="@drawable/edittext_outline"/>
@@ -35,8 +35,8 @@
         android:layout_height="wrap_content"
         android:hint="Enter Student Full Name"
         android:inputType="textPersonName"
-        android:textColor="#8c52ff"
-        android:textColorHint="#8c52ff"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:layout_marginBottom="20dp"
         android:padding="10dp"
         android:background="@drawable/edittext_outline"/>
@@ -52,9 +52,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:textColor="#8C52FF"
-            android:background="@drawable/btn_cancel_bg"
-            android:layout_marginEnd="8dp" />
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/redColor"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="13dp"/>
 
         <Button
             android:id="@+id/btnAdd"
@@ -62,7 +63,7 @@
             android:layout_height="wrap_content"
             android:text="Add"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#8C52FF"
+            android:backgroundTint="#8c52ff"
             android:layout_marginStart="8dp"
             android:paddingHorizontal="24dp"
             android:paddingVertical="13dp"/>

@@ -41,23 +41,38 @@
         android:gravity="end"
         android:layout_marginTop="8dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAddStudent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
+            app:icon="@drawable/add"
+            app:iconTint="#8c52ff"
+            app:iconSize="20dp"
+            android:textColor="#8c52ff"
             android:text="Add Student"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#8c52ff"
-            android:layout_marginEnd="8dp"
-            android:paddingHorizontal="12dp" />
+            android:background="@drawable/button_border"
+            app:backgroundTint="@null"
+            app:rippleColor="@android:color/transparent"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="6dp"
+            android:layout_marginEnd="8dp"/>
 
-        <Button
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRemove"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
+            app:icon="@drawable/minus"
+            app:iconTint="#FD0001"
+            app:iconSize="20dp"
+            android:textColor="#FD0001"
             android:text="Remove"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#ff4b4b"
-            android:paddingHorizontal="12dp" />
+            android:background="@drawable/button_border_red"
+            app:backgroundTint="@null"
+            app:rippleColor="@android:color/transparent"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:layout_marginEnd="8dp"/>
+
     </LinearLayout>
 </LinearLayout>

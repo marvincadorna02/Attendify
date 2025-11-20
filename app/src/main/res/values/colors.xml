@@ -10,4 +10,6 @@
     <color name="purpleCustom">#8c52ff</color>
     <color name="LightGrey">#D3D3D3</color>
     <color name="redColor">#FF0000</color>
+    <color name="green">#32CD32</color>
+    <color name="red">#FD0001</color>
 </resources>

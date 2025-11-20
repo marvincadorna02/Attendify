@@ -4,15 +4,12 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
 class DashboardActivity : AppCompatActivity() {
 
-    private lateinit var itemContainer: LinearLayout
     private lateinit var etStudentId: EditText
     private lateinit var etSubjectId: EditText
     private lateinit var etDate: EditText
@@ -32,20 +29,15 @@ class DashboardActivity : AppCompatActivity() {
         etDate = findViewById(R.id.etDate)
         btnCheck = findViewById(R.id.btnCheck)
         tvResult = findViewById(R.id.tvResult)
-        itemContainer = findViewById(R.id.itemContainer)
 
-        // Optional: Use a DatePickerDialog for date input
+        // Date Picker
         etDate.setOnClickListener {
             showDatePickerDialog()
         }
 
+        // Check attendance button
         btnCheck.setOnClickListener {
             checkAttendance()
-        }
-
-        val fab = findViewById<FloatingActionButton>(R.id.floatingActionButton2)
-        fab.setOnClickListener {
-            showAddWorkDialog()
         }
 
         // Profile icon navigation
@@ -62,13 +54,27 @@ class DashboardActivity : AppCompatActivity() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        val datePicker = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            val formattedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
-            etDate.setText(formattedDate)
-        }, year, month, day)
+        val dialog = DatePickerDialog(
+            this,
+            R.style.SpinnerDatePicker,  // <-- apply custom spinner theme
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val formattedDate = String.format(
+                    "%04d-%02d-%02d",
+                    selectedYear,
+                    selectedMonth + 1,
+                    selectedDay
+                )
+                etDate.setText(formattedDate)
+            },
+            year,
+            month,
+            day
+        )
 
-        datePicker.show()
+        dialog.show()
     }
+
+
 
     private fun checkAttendance() {
         val studentId = etStudentId.text.toString().trim()
@@ -99,7 +105,6 @@ class DashboardActivity : AppCompatActivity() {
 
         val subjectId = subject.id
         val isEnrolled = dbHelper.isStudentEnrolledInSubject(subjectId, studentId)
-        Log.d("DashboardActivity", "Enrollment check result: $isEnrolled")
 
         if (!isEnrolled) {
             Toast.makeText(this, "Student is not enrolled in this subject", Toast.LENGTH_SHORT).show()
@@ -110,8 +115,6 @@ class DashboardActivity : AppCompatActivity() {
         val presentCount = dbHelper.countAttendanceByStatus(studentId, subjectId, date, "present")
         val absentCount = dbHelper.countAttendanceByStatus(studentId, subjectId, date, "absent")
 
-        Log.d("DashboardActivity", "Present count: $presentCount, Absent count: $absentCount")
-
         tvResult.text = if (presentCount == 0 && absentCount == 0) {
             "No attendance records found for this date."
         } else {
@@ -119,65 +122,14 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAddWorkDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_add_work, null)
-        val dialog = android.app.AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-
-        val etWorkName = dialogView.findViewById<EditText>(R.id.etWorkName)
-        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
-        val btnCreate = dialogView.findViewById<Button>(R.id.btnCreate)
-
-        btnCancel.setOnClickListener { dialog.dismiss() }
-
-        btnCreate.setOnClickListener {
-            val workName = etWorkName.text.toString().trim()
-            if (workName.isEmpty()) {
-                etWorkName.error = "Please enter a value"
-            } else {
-                addItemToDashboard(workName)
-                dialog.dismiss()
-            }
-        }
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.show()
-    }
-
-    private fun addItemToDashboard(workName: String) {
-        val inflater = LayoutInflater.from(this)
-        val itemView = inflater.inflate(R.layout.item_card, itemContainer, false)
-
-        val subjectName = itemView.findViewById<TextView>(R.id.subjectName)
-        val removeButton = itemView.findViewById<ImageButton>(R.id.removeButton)
-
-        subjectName.text = workName
-
-        removeButton.setOnClickListener {
-            val confirmDialog = android.app.AlertDialog.Builder(this)
-                .setTitle("Remove Item")
-                .setMessage("Are you sure you want to remove \"$workName\"?")
-                .setPositiveButton("Yes") { _, _ ->
-                    itemContainer.removeView(itemView)
-                    Toast.makeText(this, "\"$workName\" removed.", Toast.LENGTH_SHORT).show()
-                }
-                .setNegativeButton("No", null)
-                .create()
-            confirmDialog.show()
-        }
-
-        itemContainer.addView(itemView)
-    }
-
-    // ⬇️⬇️ EXIT DIALOG ADDED HERE
+    // EXIT DIALOG
     override fun onBackPressed() {
         val builder = android.app.AlertDialog.Builder(this)
         builder.setTitle("Exit App")
         builder.setMessage("Are you sure you want to exit this application?")
 
         builder.setPositiveButton("Yes") { _, _ ->
-            finishAffinity() // close the app completely
+            finishAffinity()
         }
 
         builder.setNegativeButton("No") { dialog, _ ->
