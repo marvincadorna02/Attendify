@@ -130,6 +130,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textStyle="bold"
                     android:textColor="#000000"
                     android:text="No attendance checked yet"
                     android:gravity="center" />
@@ -175,6 +176,7 @@
                     android:id="@+id/homeLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
                     android:text="Home"
                     app:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                     android:textSize="12sp"
@@ -198,10 +200,11 @@
                     app:tint="#8c52ff" />
 
                 <TextView
-                    android:id="@+id/homeLabel"
+                    android:id="@+id/profileLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Profile"
+                    android:textStyle="bold"
                     app:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                     android:textSize="12sp"
                     android:textColor="#8c52ff"

@@ -120,6 +120,20 @@ class DatabaseHelper(context: Context) :
         return db.insert("attendance", null, values)
     }
 
+    // New: update attendance
+    fun updateAttendance(subjectId: String, studentId: String, date: String, status: String): Int {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("status", status.trim().lowercase())
+        }
+        return db.update(
+            "attendance",
+            values,
+            "subject_id=? AND student_school_id=? AND date=?",
+            arrayOf(subjectId.trim().uppercase(), studentId.trim(), date.trim())
+        )
+    }
+
     fun getAttendance(subjectId: String, studentId: String, date: String): String? {
         val db = readableDatabase
         val cursor = db.rawQuery(

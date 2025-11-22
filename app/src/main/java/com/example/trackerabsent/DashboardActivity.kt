@@ -1,5 +1,6 @@
 package com.example.trackerabsent
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,9 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
+import android.graphics.Color
+
+
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -56,7 +60,7 @@ class DashboardActivity : AppCompatActivity() {
 
         val dialog = DatePickerDialog(
             this,
-            R.style.SpinnerDatePicker,  // <-- apply custom spinner theme
+            R.style.SpinnerDatePicker,  // your custom theme
             { _, selectedYear, selectedMonth, selectedDay ->
                 val formattedDate = String.format(
                     "%04d-%02d-%02d",
@@ -72,7 +76,12 @@ class DashboardActivity : AppCompatActivity() {
         )
 
         dialog.show()
+
+        // Change OK and Cancel button text colors to BLACK
+        dialog.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(Color.BLACK)
+        dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(Color.BLACK)
     }
+
 
 
 
@@ -123,8 +132,8 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     // EXIT DIALOG
-    override fun onBackPressed() {
-        val builder = android.app.AlertDialog.Builder(this)
+    private fun showExitDialog() {
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Exit App")
         builder.setMessage("Are you sure you want to exit this application?")
 

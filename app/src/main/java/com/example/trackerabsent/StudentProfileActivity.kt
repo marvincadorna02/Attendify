@@ -30,14 +30,13 @@ class StudentProfileActivity : AppCompatActivity() {
     private val KEY_IMAGE_URI = "profileImageUri"
     private val CHANNEL_ID = "profile_update_channel"
 
-    private val pickImage = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
+    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             Glide.with(this)
                 .load(it)
                 .centerCrop()
                 .into(imgProfile)
+
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
                 .putString(KEY_IMAGE_URI, it.toString())
                 .apply()
@@ -89,6 +88,7 @@ class StudentProfileActivity : AppCompatActivity() {
 
         // Save button
         btnSave.setOnClickListener {
+            // Save inputs
             prefs.edit()
                 .putString("studentName", etFullname.text.toString())
                 .putString("course", etCourse.text.toString())
@@ -98,17 +98,16 @@ class StudentProfileActivity : AppCompatActivity() {
 
             Toast.makeText(this, "Profile saved successfully!", Toast.LENGTH_SHORT).show()
 
-            // Notification
-            NotificationManagerCompat.from(this).notify(
-                1001,
-                NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setContentTitle("Profile Updated")
-                    .setContentText("Your profile has been saved successfully!")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true)
-                    .build()
-            )
+            // Build notification safely
+            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info) // Use a valid drawable
+                .setContentTitle("Profile Updated")
+                .setContentText("Your profile has been saved successfully!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .build()
+
+            NotificationManagerCompat.from(this).notify(1001, notification)
 
             // Navigate to Dashboard
             startActivity(Intent(this, DashboardActivity::class.java))
@@ -122,10 +121,10 @@ class StudentProfileActivity : AppCompatActivity() {
                 CHANNEL_ID,
                 "Profile Updates",
                 NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Notifications when profile is updated"
-            }
-            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+            ).apply { description = "Notifications when profile is updated" }
+
+            val manager = getSystemService(NotificationManager::class.java)
+            manager?.createNotificationChannel(channel)
         }
     }
 }

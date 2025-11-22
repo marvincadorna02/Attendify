@@ -1,20 +1,23 @@
 package com.example.trackerabsent
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import java.text.SimpleDateFormat
+import java.util.*
 
 class SubjectStudentsActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var studentTable: TableLayout
     private lateinit var tvTitle: TextView
-    private lateinit var btnAddStudent: Button
 
     private var subjectId: String? = null
     private var subjectName: String? = null
+    private val todayDate: String by lazy {
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,21 +26,16 @@ class SubjectStudentsActivity : AppCompatActivity() {
         dbHelper = DatabaseHelper(this)
         studentTable = findViewById(R.id.studentTableContainer)
         tvTitle = findViewById(R.id.tvTitle)
-        btnAddStudent = findViewById(R.id.btnAddStudent)
 
         subjectId = intent.getStringExtra("subject_id")
         subjectName = intent.getStringExtra("subject_name")
 
-        tvTitle.text = "All Students in ${subjectName ?: "Subject"}"
+        tvTitle.text = "Students in ${subjectName ?: "Subject"}"
 
         if (!subjectId.isNullOrEmpty()) {
             loadStudents(subjectId!!)
         } else {
             Toast.makeText(this, "Invalid subject ID", Toast.LENGTH_SHORT).show()
-        }
-
-        btnAddStudent.setOnClickListener {
-            showAddStudentDialog()
         }
     }
 
@@ -65,59 +63,63 @@ class SubjectStudentsActivity : AppCompatActivity() {
             studentTable.addView(emptyRow)
         } else {
             for ((id, name) in students) {
-                val row = TableRow(this).apply {
-                    addView(createCell(id))
-                    addView(createCell(name))
+                val row = TableRow(this)
+
+                // ID Cell
+                val tvId = TextView(this).apply {
+                    text = id
+                    textSize = 16f
+                    setPadding(10, 10, 10, 10)
                 }
+
+                // Name Cell
+                val tvName = TextView(this).apply {
+                    text = name
+                    textSize = 16f
+                    setPadding(10, 10, 10, 10)
+                }
+
+                // Attendance Spinner
+                val spinner = Spinner(this).apply {
+                    val options = listOf("Present", "Absent")
+                    adapter = ArrayAdapter(
+                        this@SubjectStudentsActivity,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        options
+                    )
+
+                    // Set current attendance if exists
+                    val currentStatus = dbHelper.getAttendance(subjectId!!, id, todayDate)
+                    setSelection(if (currentStatus == "present") 0 else if (currentStatus == "absent") 1 else 0)
+
+                    onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>,
+                            view: View?,
+                            position: Int,
+                            idPos: Long
+                        ) {
+                            val selectedStatus = options[position].lowercase()
+
+                            // Check if attendance exists
+                            val exists = dbHelper.getAttendance(subjectId!!, id, todayDate)
+                            if (exists == null) {
+                                dbHelper.insertAttendance(subjectId!!, id, todayDate, selectedStatus)
+                            } else {
+                                dbHelper.updateAttendance(subjectId!!, id, todayDate, selectedStatus)
+                            }
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>) {}
+                    }
+                }
+
+                row.addView(tvId)
+                row.addView(tvName)
+                row.addView(spinner)
+
                 studentTable.addView(row)
             }
         }
-    }
-
-    private fun createCell(text: String): TextView {
-        return TextView(this).apply {
-            this.text = text
-            textSize = 16f
-            setPadding(10, 10, 10, 10)
-            setTextColor(android.graphics.Color.BLACK)
-        }
-    }
-
-    private fun showAddStudentDialog() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_student, null)
-        val etStudentId = dialogView.findViewById<EditText>(R.id.etStudentId)
-        val etStudentName = dialogView.findViewById<EditText>(R.id.etStudentName)
-        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
-        val btnAdd = dialogView.findViewById<Button>(R.id.btnAdd)
-
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
-
-        btnCancel.setOnClickListener { dialog.dismiss() }
-
-        btnAdd.setOnClickListener {
-            val studentId = etStudentId.text.toString().trim()
-            val studentName = etStudentName.text.toString().trim()
-
-            if (studentId.isEmpty() || studentName.isEmpty()) {
-                Toast.makeText(this, "Please enter both ID and Name", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            subjectId?.let { id ->
-                val success = dbHelper.addStudentToSubject(studentId, studentName, id)
-                if (success) {
-                    Toast.makeText(this, "Student added successfully!", Toast.LENGTH_SHORT).show()
-                    loadStudents(id)
-                    dialog.dismiss()
-                } else {
-                    Toast.makeText(this, "Student already exists in this subject.", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        dialog.show()
     }
 }
