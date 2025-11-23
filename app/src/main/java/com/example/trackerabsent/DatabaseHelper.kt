@@ -6,9 +6,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "AbsentTracker.db", null, 6) {
+    SQLiteOpenHelper(context, "AbsentTracker.db", null, 7) {
 
     override fun onCreate(db: SQLiteDatabase) {
+
         db.execSQL(
             """
             CREATE TABLE subjects (
@@ -39,6 +40,7 @@ class DatabaseHelper(context: Context) :
                 student_school_id TEXT NOT NULL,
                 date TEXT NOT NULL,
                 status TEXT NOT NULL,
+                UNIQUE(subject_id, student_school_id, date),
                 FOREIGN KEY(subject_id) REFERENCES subjects(id) ON DELETE CASCADE
             )
             """.trimIndent()
@@ -52,7 +54,7 @@ class DatabaseHelper(context: Context) :
         onCreate(db)
     }
 
-    // Insert a new subject
+    // Insert new subject
     fun insertSubject(id: String, subjectName: String, teacherName: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -77,7 +79,7 @@ class DatabaseHelper(context: Context) :
         return result != -1L
     }
 
-    // Check if student is already enrolled
+    // Check if student is enrolled
     fun isStudentEnrolledInSubject(subjectId: String, studentId: String): Boolean {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -89,7 +91,7 @@ class DatabaseHelper(context: Context) :
         return exists
     }
 
-    // Get students for a subject as Pair(ID, Name)
+    // Get list of students in a subject
     fun getStudentsBySubject(subjectId: String): List<Pair<String, String>> {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -99,16 +101,33 @@ class DatabaseHelper(context: Context) :
         val students = mutableListOf<Pair<String, String>>()
         if (cursor.moveToFirst()) {
             do {
-                val id = cursor.getString(0)
-                val name = cursor.getString(1)
-                students.add(Pair(id, name))
+                students.add(Pair(cursor.getString(0), cursor.getString(1)))
             } while (cursor.moveToNext())
         }
         cursor.close()
         return students
     }
 
-    // Attendance functions
+    // Insert or update attendance automatically
+    fun saveAttendance(subjectId: String, studentId: String, date: String, status: String): Boolean {
+        return if (attendanceExists(subjectId, studentId, date)) {
+            updateAttendance(subjectId, studentId, date, status) > 0
+        } else {
+            insertAttendance(subjectId, studentId, date, status) != -1L
+        }
+    }
+
+    private fun attendanceExists(subjectId: String, studentId: String, date: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT 1 FROM attendance WHERE subject_id=? AND student_school_id=? AND date=? LIMIT 1",
+            arrayOf(subjectId.trim().uppercase(), studentId.trim(), date.trim())
+        )
+        val exists = cursor.moveToFirst()
+        cursor.close()
+        return exists
+    }
+
     fun insertAttendance(subjectId: String, studentId: String, date: String, status: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -120,7 +139,6 @@ class DatabaseHelper(context: Context) :
         return db.insert("attendance", null, values)
     }
 
-    // New: update attendance
     fun updateAttendance(subjectId: String, studentId: String, date: String, status: String): Int {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -134,27 +152,63 @@ class DatabaseHelper(context: Context) :
         )
     }
 
+    // Get attendance for specific date
     fun getAttendance(subjectId: String, studentId: String, date: String): String? {
         val db = readableDatabase
         val cursor = db.rawQuery(
             "SELECT status FROM attendance WHERE subject_id=? AND student_school_id=? AND date=?",
             arrayOf(subjectId.trim().uppercase(), studentId.trim(), date.trim())
         )
-        val status = if (cursor.moveToFirst()) cursor.getString(0) else null
+        val result = if (cursor.moveToFirst()) cursor.getString(0) else null
         cursor.close()
-        return status
+        return result
     }
 
-    fun countAttendanceByStatus(studentId: String, subjectId: String, date: String, status: String): Int {
+    // Get ALL attendance records for one student (history)
+    fun getAttendanceHistory(studentId: String, subjectId: String): List<AttendanceRecord> {
         val db = readableDatabase
         val cursor = db.rawQuery(
-            "SELECT COUNT(*) FROM attendance WHERE student_school_id=? AND subject_id=? AND date=? AND status=?",
-            arrayOf(studentId.trim(), subjectId.trim().uppercase(), date.trim(), status.trim().lowercase())
+            """
+                SELECT date, status 
+                FROM attendance 
+                WHERE student_school_id=? AND subject_id=? 
+                ORDER BY date ASC
+            """,
+            arrayOf(studentId.trim(), subjectId.trim().uppercase())
         )
-        var count = 0
-        if (cursor.moveToFirst()) count = cursor.getInt(0)
+
+        val list = mutableListOf<AttendanceRecord>()
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(
+                    AttendanceRecord(
+                        date = cursor.getString(0),
+                        status = cursor.getString(1)
+                    )
+                )
+            } while (cursor.moveToNext())
+        }
         cursor.close()
-        return count
+        return list
+    }
+
+    // Count all present/absent etc.
+    fun countStatus(studentId: String, subjectId: String, status: String): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            """
+                SELECT COUNT(*) 
+                FROM attendance 
+                WHERE student_school_id=? 
+                AND subject_id=? 
+                AND status=?
+            """,
+            arrayOf(studentId.trim(), subjectId.trim().uppercase(), status.trim().lowercase())
+        )
+        var total = 0
+        if (cursor.moveToFirst()) total = cursor.getInt(0)
+        cursor.close()
+        return total
     }
 
     // Get all subjects
@@ -177,7 +231,6 @@ class DatabaseHelper(context: Context) :
         return list
     }
 
-    // Get subject by name
     fun getSubjectByName(subjectName: String): Subject? {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -196,7 +249,30 @@ class DatabaseHelper(context: Context) :
         return subject
     }
 
-    // Get subjects by teacher
+    // Count attendance by specific status on a specific date
+    fun countAttendanceByStatus(studentId: String, subjectId: String, date: String, status: String): Int {
+        val db = readableDatabase
+        var count = 0
+
+        val query = """
+        SELECT COUNT(*) FROM attendance
+        WHERE student_school_id = ?
+        AND subject_id = ?
+        AND date = ?
+        AND status = ?
+    """
+
+        val cursor = db.rawQuery(query, arrayOf(studentId.trim(), subjectId.trim().uppercase(), date.trim(), status.trim().lowercase()))
+
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+
+        cursor.close()
+        return count
+    }
+
+
     fun getSubjectsByTeacher(teacherName: String): List<Subject> {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -219,3 +295,9 @@ class DatabaseHelper(context: Context) :
         return list
     }
 }
+
+// Data class for attendance history
+data class AttendanceRecord(
+    val date: String,
+    val status: String
+)

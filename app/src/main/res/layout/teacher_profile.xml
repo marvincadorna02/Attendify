@@ -43,7 +43,7 @@
                 android:id="@+id/imgProfile"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/person"
+                android:src="@drawable/student"
                 android:background="@drawable/circle_border"
                 android:elevation="6dp"
                 android:scaleType="centerCrop" />

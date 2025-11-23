@@ -98,15 +98,29 @@ class TeacherDashboardActivity : AppCompatActivity() {
             } else if (studentName.isEmpty()) {
                 etStudentName.error = "Please enter student Name"
             } else {
-                val success = dbHelper.addStudentToSubject(studentId, studentName, subjectId)
-                if (success) {
-                    Toast.makeText(this, "Student added successfully!", Toast.LENGTH_SHORT).show()
+                // Check if student ID or Name already exists in this subject
+                val idExists = dbHelper.isStudentEnrolledInSubject(subjectId, studentId)
+                val nameExists = dbHelper.getStudentsBySubject(subjectId)
+                    .any { it.second.equals(studentName, ignoreCase = true) }
+
+                if (idExists || nameExists) {
+                    Toast.makeText(
+                        this,
+                        "Student already added with same ID or Name!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(this, "Student already enrolled!", Toast.LENGTH_SHORT).show()
+                    val success = dbHelper.addStudentToSubject(studentId, studentName, subjectId)
+                    if (success) {
+                        Toast.makeText(this, "Student added successfully!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Failed to add student!", Toast.LENGTH_SHORT).show()
+                    }
+                    dialog.dismiss()
                 }
-                dialog.dismiss()
             }
         }
+
 
         dialog.show()
     }

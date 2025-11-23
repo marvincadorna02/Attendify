@@ -65,32 +65,56 @@ class SubjectStudentsActivity : AppCompatActivity() {
             for ((id, name) in students) {
                 val row = TableRow(this)
 
-                // ID Cell
+                val existingStatus = dbHelper.getAttendance(subjectId!!, id, todayDate)
+
+                // Highlight if already has attendance
+                // Highlight if already has attendance
+                if (existingStatus != null) {
+                    row.setBackgroundColor(
+                        when (existingStatus.lowercase()) {
+                            "present" -> getColor(android.R.color.holo_green_light)
+                            "absent" -> getColor(android.R.color.holo_red_light) // red for absent
+                            else -> getColor(android.R.color.transparent)
+                        }
+                    )
+                } else {
+                    row.setBackgroundColor(getColor(android.R.color.transparent))
+                }
+
                 val tvId = TextView(this).apply {
                     text = id
                     textSize = 16f
+                    setTextColor(getColor(android.R.color.black))
                     setPadding(10, 10, 10, 10)
                 }
 
-                // Name Cell
                 val tvName = TextView(this).apply {
                     text = name
                     textSize = 16f
+                    setTextColor(getColor(android.R.color.black))
                     setPadding(10, 10, 10, 10)
                 }
 
-                // Attendance Spinner
                 val spinner = Spinner(this).apply {
                     val options = listOf("Present", "Absent")
-                    adapter = ArrayAdapter(
+                    val adapter = ArrayAdapter(
                         this@SubjectStudentsActivity,
                         android.R.layout.simple_spinner_dropdown_item,
                         options
                     )
+                    this.adapter = adapter
 
-                    // Set current attendance if exists
-                    val currentStatus = dbHelper.getAttendance(subjectId!!, id, todayDate)
-                    setSelection(if (currentStatus == "present") 0 else if (currentStatus == "absent") 1 else 0)
+                    val currentStatus = existingStatus
+                    setSelection(
+                        if (currentStatus == "present") 0
+                        else if (currentStatus == "absent") 1
+                        else 0
+                    )
+
+                    post {
+                        val selectedView = selectedView as? TextView
+                        selectedView?.setTextColor(getColor(android.R.color.black))
+                    }
 
                     onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(
@@ -99,11 +123,10 @@ class SubjectStudentsActivity : AppCompatActivity() {
                             position: Int,
                             idPos: Long
                         ) {
+                            (view as? TextView)?.setTextColor(getColor(android.R.color.black))
                             val selectedStatus = options[position].lowercase()
 
-                            // Check if attendance exists
-                            val exists = dbHelper.getAttendance(subjectId!!, id, todayDate)
-                            if (exists == null) {
+                            if (existingStatus == null) {
                                 dbHelper.insertAttendance(subjectId!!, id, todayDate, selectedStatus)
                             } else {
                                 dbHelper.updateAttendance(subjectId!!, id, todayDate, selectedStatus)
@@ -120,6 +143,7 @@ class SubjectStudentsActivity : AppCompatActivity() {
 
                 studentTable.addView(row)
             }
+
         }
     }
 }
