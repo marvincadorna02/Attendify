@@ -100,7 +100,7 @@
                     android:id="@+id/settings"
                     android:layout_width="40dp"
                     android:layout_height="37dp"
-                    android:src="@drawable/person"
+                    android:src="@drawable/settings"
                     android:contentDescription="Settings"
                     app:tint="#8c52ff" />
 
@@ -108,7 +108,7 @@
                     android:id="@+id/profileLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Profile"
+                    android:text="Settings"
                     android:textStyle="bold"
                     app:titleTextAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                     android:textSize="12sp"

@@ -110,7 +110,7 @@ class StudentProfileActivity : AppCompatActivity() {
             NotificationManagerCompat.from(this).notify(1001, notification)
 
             // Navigate to Dashboard
-            startActivity(Intent(this, DashboardActivity::class.java))
+            startActivity(Intent(this, SettingsActivity::class.java))
             finish()
         }
     }

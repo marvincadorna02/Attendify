@@ -45,9 +45,9 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         // Profile icon navigation
-        val profileIcon = findViewById<ImageView>(R.id.profile)
+        val profileIcon = findViewById<ImageView>(R.id.settings)
         profileIcon.setOnClickListener {
-            val intent = Intent(this, StudentProfileActivity::class.java)
+            val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
     }

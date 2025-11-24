@@ -46,6 +46,10 @@
         <activity android:name=".SubjectStudentsActivity" />
         <activity android:name=".StudentProfileActivity" />
         <activity android:name=".TeacherProfileActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".TeacherProfileActivity" />
+
+
 
 
     </application>
